@@ -13,10 +13,10 @@
    forced to be within the first 8 KiB of the kernel file.
  */
 .section .multiboot
-.align 4
-.long MAGIC
-.long FLAGS
-.long CHECKSUM
+	.align 4
+	.long MAGIC
+	.long FLAGS
+	.long CHECKSUM
 
 /*
    The multiboot standard does not define the value of the stack pointer register
@@ -31,10 +31,10 @@
    undefined behavior.
  */
 .section .bss
-.align 16
-stack_bottom:
-.skip 16384 # 16 KiB
-stack_top:
+	.align 16
+	stack_bottom:
+	.skip 16384 # 16 KiB
+	stack_top:
 
 /*
    The linker script specifies _start as the entry point to the kernel and the
@@ -42,9 +42,9 @@ stack_top:
    doesn't make sense to return from this function as the bootloader is gone.
  */
 .section .text
-.global _start
-.type _start, @function
-_start:
+	.global _start
+	.type _start, @function
+	_start:
 /*
    The bootloader has loaded us into 32-bit protected mode on a x86
    machine. Interrupts are disabled. Paging is disabled. The processor
@@ -63,7 +63,7 @@ _start:
    stack (as it grows downwards on x86 systems). This is necessarily done
    in assembly as languages such as C cannot function without a stack.
  */
-mov $stack_top, %esp
+		mov $stack_top, %esp
 
 /*
    This is a good place to initialize crucial processor state before the
@@ -84,7 +84,7 @@ mov $stack_top, %esp
    stack since (pushed 0 bytes so far) and the alignment is thus
    preserved and the call is well defined.
  */
-call kernel_main
+		call kernel_main
 
 /*
    If the system has nothing more to do, put the computer into an
@@ -98,9 +98,10 @@ call kernel_main
    3) Jump to the hlt instruction if it ever wakes up due to a
    non-maskable interrupt occurring or due to system management mode.
  */
-cli
-1:	hlt
-jmp 1b
+	stop:
+		cli
+		hlt
+		jmp stop
 
 /*
    Set the size of the _start symbol to the current location '.' minus its start.
