@@ -94,11 +94,22 @@ void terminal_write(const char* data, size_t size) {
 void terminal_writestring(const char* data) {
 	terminal_write(data, strlen(data));
 }
- 
+
+void render() {
+	for (size_t y = 0; y < VGA_HEIGHT; y++) {
+		for (size_t x = 0; x < VGA_WIDTH; x++) {
+			const size_t index = y * VGA_WIDTH + x;
+			const uint8_t color = (index & 0xF) << 4;
+			terminal_buffer[index] = vga_entry(' ', color);
+		}
+	}
+}
+
 void kernel_main(void) {
 	/* Initialize terminal interface */
 	terminal_initialize();
  
 	/* Newline support is left as an exercise. */
-	terminal_writestring("Hello, kernel World!\n");
+	// terminal_writestring("Hello, kernel World!\n");
+	render();
 }
